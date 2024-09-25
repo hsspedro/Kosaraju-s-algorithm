@@ -1,21 +1,22 @@
 use std::collections::HashMap;
 use std::collections::HashSet;
 
-fn kosaraju(graph: &HashMap<i32, Vec<i32>>) -> Vec<Vec<i32>> {
+fn kosaraju(graph: &HashMap<i32, Vec<i32>>, start_node: i32) -> Vec<Vec<i32>> {
     let mut stack = Vec::new();
     let mut visited = HashSet::new();
 
-    //primeiro dfs
+    if !visited.contains(&start_node) {
+        dfs1(start_node, graph, &mut visited, &mut stack);
+    }
+
     for &node in graph.keys() {
         if !visited.contains(&node) {
             dfs1(node, graph, &mut visited, &mut stack);
         }
     }
-
-    //transpor
+    
     let transposed_graph = transpose(graph);
 
-    //segundo dfs
     visited.clear();
     let mut scc = Vec::new();
     while let Some(node) = stack.pop() {
@@ -66,12 +67,15 @@ fn transpose(graph: &HashMap<i32, Vec<i32>>) -> HashMap<i32, Vec<i32>> {
 fn main() {
     let mut graph = HashMap::new();
     graph.insert(0, vec![1]);
-    graph.insert(1, vec![2]);
-    graph.insert(2, vec![0, 3]);
-    graph.insert(3, vec![4]);
-    graph.insert(4, vec![5]);
-    graph.insert(5, vec![3]);
+    graph.insert(1, vec![2, 4, 5]);
+    graph.insert(2, vec![3, 6]);
+    graph.insert(3, vec![2, 7]);
+    graph.insert(4, vec![0, 5]);
+    graph.insert(5, vec![6]);
+    graph.insert(6, vec![5, 7]);
+    graph.insert(7, vec![7]);
 
-    let scc = kosaraju(&graph);
+    let start_node = 2;
+    let scc = kosaraju(&graph, start_node);
     println!("{:?}", scc);
 }
